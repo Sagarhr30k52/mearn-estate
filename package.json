@@ -1,0 +1,26 @@
+{
+  "name": "real-estate",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev" : "nodemon api/index.js",
+    "start" : "npm api/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sagarhr30k52/mearn-estate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sagarhr30k52/mearn-estate/issues"
+  },
+  "homepage": "https://github.com/Sagarhr30k52/mearn-estate#readme",
+  "description": "",
+  "dependencies": {
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10"
+  }
+}
