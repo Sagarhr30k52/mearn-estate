@@ -20,6 +20,7 @@
   "homepage": "https://github.com/Sagarhr30k52/mearn-estate#readme",
   "description": "",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
     "mongodb": "^6.18.0",
