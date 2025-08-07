@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
-function Signout() {
+function Signup() {
   const [formData, setFormData] = useState({});
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -87,4 +87,4 @@ function Signout() {
   );
 }
 
-export default Signout;
+export default Signup;
