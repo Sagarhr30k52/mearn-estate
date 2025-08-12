@@ -14,13 +14,14 @@ function OAuth() {
       const auth = getAuth(app);
 
       const result = await signInWithPopup(auth, provider);
-      console.log(import.meta.env.VITE_API_BASE_URL);
+      // console.log(import.meta.env.VITE_API_BASE_URL);
       const res = await fetch(
         `${
           import.meta.env.VITE_API_BASE_URL
         }/api/auth/google`,
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "content-type": "application/json",
           },
