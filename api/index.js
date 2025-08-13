@@ -3,8 +3,11 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+
 import userRouter from './routes/user.route.js';
-import authRouter from './routes/auth.route.js'
+import authRouter from './routes/auth.route.js';
+import listingRouter from './routes/listing.route.js';
+
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 
@@ -29,6 +32,8 @@ mongoose.connect(process.env.MONGO_URI, {
 
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/listing', listingRouter);
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
