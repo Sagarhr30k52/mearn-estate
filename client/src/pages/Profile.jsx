@@ -120,7 +120,8 @@ function Profile() {
       } catch (error) {
         console.log(error);
       }
-  }
+  };
+  
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-3xl font-bold text-center mb-5">Profile</h1>
