@@ -4,3 +4,6 @@ body {
     background-color: rdb(241, 245, 241);
     margin-top: 5rem;
 }
+button, Link{
+    cursor: pointer;
+}
