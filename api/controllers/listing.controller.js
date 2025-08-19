@@ -3,7 +3,6 @@ import { errorHandler } from "../utils/error.js";
 
 export const createListing = async (req, res, next) => {
   try {
-    console.log("on backend", req.body);
     const listing = await Listing.create(req.body);
     return res.status(201).json(listing);
   } catch (error) {
@@ -16,8 +15,6 @@ export const deleteListing = async (req, res, next) => {
   if (!listing) {
     return res.status(404).json({ message: "Listing not found" });
   }
-  console.log("listing userRef", listing.userRef);
-  console.log("req.user._id", req.user._id);
   
   if (req.user.id !== listing.userRef) {
     return res
