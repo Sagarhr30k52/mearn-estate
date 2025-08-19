@@ -10,8 +10,11 @@ import listingRouter from './routes/listing.route.js';
 
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import path from 'path';
 
 dotenv.config();
+
+const __dirname = path.resolve();
 
 const app = express();
 app.use(cors({
@@ -34,6 +37,12 @@ app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
 app.use('/api/listing', listingRouter);
 
+app.use(express.static(path.join(__dirname, '/client/dist')));
+
+app.get(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, 'client/dist/index.html'));
+})
+ 
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
