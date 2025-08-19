@@ -6,7 +6,7 @@ function ListingItem({ listing }) {
     <div className="bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px]">
       <Link to={`/listing/${listing._id}`}>
         <img
-          src={listing.images[0]}
+          src={listing.images[0] || "https://th.bing.com/th/id/R.cc5bea8aed5ed4ba231b2fa24a25ef46?rik=MyKIXaVYRGEVbA&riu=http%3a%2f%2f3.bp.blogspot.com%2f_Dv90SGLTTYs%2fTO2z5lyAKFI%2fAAAAAAAAAO8%2f7p62igFBY80%2fs1600%2fbiltmore-estate-exterior.jpg&ehk=EWXebcd1xa2GHfXpif13s9c6L6%2bLu%2bdWkkHRDZgLOqs%3d&risl=&pid=ImgRaw&r=0"}
           alt="listing cover"
           className="h-[320px] sm:h-[220px] w-full object-cover hover:scale-105 transition-scale duration-300"
         />
