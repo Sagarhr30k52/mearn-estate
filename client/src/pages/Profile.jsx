@@ -110,6 +110,7 @@ function Profile() {
       try {
         const res = await fetch(`/api/listing/delete/${listingId}`, {
           method: 'DELETE',
+          credentials: "include",
         })
         const data = await res.json();
         if (data.success == false) {

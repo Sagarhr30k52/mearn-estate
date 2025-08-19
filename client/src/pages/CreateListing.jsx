@@ -62,6 +62,7 @@ function CreateListing() {
         setError(`File "${largeFile.name}" is larger than 2MB. Please choose a smaller file.`);
         return;
     }
+    else{setError(false);}
 
     setUploading(true);
     try {
@@ -86,6 +87,7 @@ function CreateListing() {
     if (fileInputRef.current) {
       fileInputRef.current.value = ""; // resets the actual input
     }
+    setError(false);
     } catch (error) {
       setError(error);
     } finally {

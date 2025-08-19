@@ -16,7 +16,10 @@ export const deleteListing = async (req, res, next) => {
   if (!listing) {
     return res.status(404).json({ message: "Listing not found" });
   }
-  if (req.user._id !== listing.userRef) {
+  console.log("listing userRef", listing.userRef);
+  console.log("req.user._id", req.user._id);
+  
+  if (req.user.id !== listing.userRef) {
     return res
       .status(403)
       .json({ message: "You do not have permission to delete this" });
