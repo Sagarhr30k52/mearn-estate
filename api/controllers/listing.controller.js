@@ -62,7 +62,30 @@ export const getListing = async (req, res, next) => {
     next(error);
   }
 };
-
+export const getListingLimits = async (req, res, next) => {
+  try {
+    const stats = await Listing.aggregate([
+      {
+        $group: {
+          _id: null,
+          minPrice: { $min: "$regularPrice" },
+          maxPrice: { $max: "$regularPrice" },
+        }
+      }
+    ]);
+    let priceLimits = {minPrice: 0, maxPrice: 0};
+    if (stats.length > 0) {
+      priceLimits = {
+      minPrice: stats[0].minPrice,
+      maxPrice: stats[0].maxPrice
+      }
+    }
+    res.status(200).json(priceLimits);
+  }
+  catch (error) {
+    console.error("Error fetching listing limits:", error);
+  }
+};
 export const getListings = async (req, res, next) => {
   try {
     const limit = parseInt(req.query.limit) || 9;
@@ -89,12 +112,17 @@ export const getListings = async (req, res, next) => {
     const searchTerm = req.query.searchTerm || "";
     const sort = req.query.sort || "createdAt";
     const order = req.query.order === "desc" ? -1 : 1;
+
+    const minPrice = parseInt(req.query.minPrice) || 0;
+    const maxPrice = parseInt(req.query.maxPrice) || 1000000;
+
     const listings = await Listing.find({
       name: { $regex: searchTerm, $options: "i" },
       offer,
       furnished,
       parking,
       type,
+      regularPrice: {$gte: minPrice, $lte: maxPrice},
     }).sort({ [sort]: order }).limit(limit).skip(startIndex);
 
     return res.status(200).json(listings);

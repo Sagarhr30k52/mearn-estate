@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
+function useDebounce(value, delay) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+    return () => {
+      clearTimeout(handler);
+    }
+  }, [value, delay]);
+  return debouncedValue;
+}
 function Search() {
   const navigate = useNavigate();
   const [sidebarData, setSidebarData] = useState({
@@ -15,6 +27,29 @@ function Search() {
   const [loading, setLoading] = useState(false);
   const [listings, setListings] = useState([]);
   const [showMore, setShowMore] = useState(false);
+  const [priceLimits, setPriceLimits] = useState({minPrice: 0, maxPrice: 0});
+  const [currentValue, setCurrentValue] = useState(0);
+  const debouncedPrice = useDebounce(currentValue, 400);
+
+  useEffect(() => {
+      const fetchLimits = async () => {
+      try {
+        const res = await fetch("api/listing/getprice-Limits");
+      const data = await res.json();
+      if(data){
+        setPriceLimits(data);
+        const urlParams = new URLSearchParams(location.search);
+        const maxPriceFromUrl = urlParams.get("maxPrice");
+        setCurrentValue(maxPriceFromUrl || data.maxPrice);
+      }
+      console.log(data);
+      }
+      catch (error) {
+        console.error("Error fetching listing limits:", error);
+      }
+    }
+    fetchLimits();
+    }, []);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -25,6 +60,7 @@ function Search() {
     const offerFromUrl = urlParams.get("offer");
     const sortFromUrl = urlParams.get("sort");
     const orderFromUrl = urlParams.get("order");
+    const maxPriceFromUrl = urlParams.get("maxPrice");
 
     if (
       searchTermFromUrl ||
@@ -33,7 +69,8 @@ function Search() {
       furnishedFromUrl ||
       offerFromUrl ||
       sortFromUrl ||
-      orderFromUrl
+      orderFromUrl ||
+      maxPriceFromUrl
     ) {
       setSidebarData({
         searchTerm: searchTermFromUrl || "",
@@ -44,24 +81,43 @@ function Search() {
         sort: sortFromUrl || "created_at",
         order: orderFromUrl || "desc",
       });
+      if (priceLimits.maxPrice > 0) {
+        setCurrentValue(maxPriceFromUrl || priceLimits.maxPrice);
+      }
     }
 
     const fetchListings = async () => {
       setLoading(true);
+      setShowMore(false); 
       const searchQuerry = urlParams.toString();
       const res = await fetch(`/api/listing/get?${searchQuerry}`);
       const data = await res.json();
-      if(data.length > 8){
+      if (data.length > 8) {
         setShowMore(true);
-      }else{
+      } else {
         setShowMore(false);
       }
       setListings(data);
       setLoading(false);
     };
-    fetchListings();
-  }, [location.search]);
 
+    fetchListings();
+  }, [location.search, priceLimits.maxPrice]);
+
+  useEffect(() => {
+    if(priceLimits.maxPrice === 0) return;
+    const urlParams = new URLSearchParams(location.search);
+    const currentUrlMaxPrice = urlParams.get("maxPrice");
+    if(String(debouncedPrice) !== currentUrlMaxPrice){
+      urlParams.set("minPrice", priceLimits.minPrice);
+      urlParams.set("maxPrice", debouncedPrice);
+      navigate(`/search?${urlParams.toString()}`);
+    }
+  }, [debouncedPrice, navigate, location.search, priceLimits]);
+
+  const handleSliderChange = (e) => {
+    setCurrentValue(Number(e.target.value));
+  }
   const handleChange = (e) => {
     if (
       e.target.id === "all" ||
@@ -97,6 +153,8 @@ function Search() {
     urlParams.set("offer", sidebarData.offer);
     urlParams.set("sort", sidebarData.sort);
     urlParams.set("order", sidebarData.order);
+    urlParams.set("minPrice", priceLimits.minPrice);
+    urlParams.set("maxPrice", currentValue);
     const searchQuery = urlParams.toString();
     navigate(`/search?${searchQuery}`);
   };
@@ -216,6 +274,23 @@ function Search() {
             </select>
           </div>
 
+          <div className="flex items-center gap-2">
+          <input id="slider" type="range" min={priceLimits.minPrice} max={priceLimits.maxPrice} step="10" value ={currentValue}  onChange={handleSliderChange} />
+          </div>
+          <div className="flex justify-between gap-3">
+            <div className="border border-gray-300 rounded-md px-3 py-2 min-w-[80px] text-center">
+              <div className="text-xs text-gray-600">Min Price</div>
+              <div className="text-base font-bold">${priceLimits.minPrice}</div>
+            </div>
+            <div className="border border-gray-300 rounded-md px-3 py-2 min-w-[80px] text-center">
+              <div className="text-xs text-gray-600">Current Price</div>
+              <div className="text-base font-bold">${currentValue}</div>
+            </div>
+            <div className="border border-gray-300 rounded-md px-3 py-2 min-w-[80px] text-center">
+              <div className="text-xs text-gray-600">Max Price</div>
+              <div className="text-base font-bold">${priceLimits.maxPrice}</div>
+            </div>
+          </div>
           <button className="bg-slate-700 text-white p-3 rounded-lg uppercase hover:opacity-95">
             Search
           </button>

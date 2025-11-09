@@ -68,3 +68,22 @@ export const getUser = async (req, res, next) => {
         next(error);
     }
 }
+
+export const updateListingOrder = async (req, res, next) => {
+  const {listType, order} = req.body;
+  const fieldToUpdate = `${listType}listingOrder`;
+  try{
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, 
+      {
+      $set: {[fieldToUpdate]: order},
+      },
+      {new: true}
+    );
+    const response = {...updatedUser._doc};
+    delete response.password;
+
+    res.status(200).json(response);
+  }catch(error){
+    next(error);
+  }
+}

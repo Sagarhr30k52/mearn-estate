@@ -5,12 +5,22 @@ import {Navigation} from 'swiper/modules';
 import SwiperCore from 'swiper';
 import 'swiper/css/bundle';
 import ListingItem from '../components/ListingItem.jsx';
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {useSelector, useDispatch} from 'react-redux'
+import {updateUserSuccess} from '../redux/user/userSlice.js'
 
 function Home() {
   const [offerListings, setOfferListings] = useState([]);
   const [saleListings, setSaleListings] = useState([]);
   const [rentListings, setRentListings] = useState([]);
   SwiperCore.use([Navigation]);
+
+  const {currentUser} = useSelectore((state) => state.user);
+  const dispatch = useDispatch();
+  const [sortedRent, setSortedRent] = useState([]);
+  const [sortedSale, setSortedSale] = useState([]);
+  const [sortedOffer, setSortedOffer] = useState([]);
+
 
   useEffect(() => {
     const fetchOfferListings = async () => {
@@ -46,7 +56,82 @@ function Home() {
       }
     }
     fetchOfferListings();
-  }, [])
+  }, []);
+
+  const sortListings = (listings, order) => {
+    if(!order || order.length === 0) return listings;
+    const orderMap = new Map(order.map((id, index) => [id, index]));
+    retrun [...listings].sort((a, b) => {
+      const aIndex = orderMap.get(a._id);
+      const bIndex = orderMap.get(b._id);
+      if(aIndex !== undefined && bIndex !== undefined) return aIndex - bIndex;
+      if(aIndex !== undefined) return -1;
+      if(bIndex !== undefined) return 1;
+      return 0;
+    })
+  }
+
+  useEffect(() => {
+    if(currentUser) {
+      setSortedRent(sortListings(rentListings, currentUser.rentlistingOrder));
+      setSortedSale(sortListings(saleListings, currentUser.saleListingOrder));
+      setSortedOffer(sortListings(offerListings, currentUser.offerListingOrder));
+    } else{
+      setSortedRent(rentListings);
+      setSortedSale(saleListings);
+      setSortedOffer(offerListings);
+    }
+  }, [rentListings, saleListings, offerListings, currentUser]);
+
+  const handleOnGragEnd = async (result) => {
+    const {source, destination} = result;
+    if(!destination) return;
+    if(!currentUser) return;
+
+    let listType;
+    if(source.droppableId === 'rentListings') listType = 'rent';
+    else if(source.droppableId === 'saleListings') listType = 'sale';
+    else if(source.droppableId === 'offerListings') listType = 'offer';
+    else return;
+
+    const listMap = {
+      rent: {items: sortedRent, setter: setSortedRent},
+      sale: {items: sortedSale, setter: setSortedSale},
+      offer: {items: sortedOffer, setter: setSortedOffer},
+    };
+    const {items, setter} = listMap[listType];
+
+    const reorderedItems = Array.from(items);
+    const [movedItem] = reorderedItems.splice(source.index, 1);
+    reorderedItems.splice(destination.index, 0, movedItem);
+
+    setter(reorderedItems);
+
+    const newIdOrder = reorderedItems.map((item) => item._id);
+
+    try{
+      const  res = await fetch(`api/user/update-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body : JSON.stringify({
+          listType: listType,
+          order: newIdOrder,
+        }),
+      });
+      const data = await res.json();
+      if(data.success === false){
+        setter(items);
+      } else{
+        dispatch(updateUserSuccess(data));
+      }
+    }
+    }catch(error){
+      setter(items);
+    }
+  }
+  
   return (
     <div>
       {/* top */}
@@ -125,7 +210,7 @@ function Home() {
               </div>
               <div className="flex flex-wrap gap-4 justify-center">
                 {
-                  offerListings.map((listing) => (
+                  saleListings.map((listing) => (
                     <ListingItem listing={listing} key={listing._id}></ListingItem>
                   ))
                 }
