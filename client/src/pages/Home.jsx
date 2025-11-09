@@ -5,8 +5,8 @@ import {Navigation} from 'swiper/modules';
 import SwiperCore from 'swiper';
 import 'swiper/css/bundle';
 import ListingItem from '../components/ListingItem.jsx';
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {useSelector, useDispatch} from 'react-redux'
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import {updateUserSuccess} from '../redux/user/userSlice.js'
 
 function Home() {
@@ -15,7 +15,7 @@ function Home() {
   const [rentListings, setRentListings] = useState([]);
   SwiperCore.use([Navigation]);
 
-  const {currentUser} = useSelectore((state) => state.user);
+  const {currentUser} = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const [sortedRent, setSortedRent] = useState([]);
   const [sortedSale, setSortedSale] = useState([]);
@@ -61,7 +61,7 @@ function Home() {
   const sortListings = (listings, order) => {
     if(!order || order.length === 0) return listings;
     const orderMap = new Map(order.map((id, index) => [id, index]));
-    retrun [...listings].sort((a, b) => {
+    return [...listings].sort((a, b) => {
       const aIndex = orderMap.get(a._id);
       const bIndex = orderMap.get(b._id);
       if(aIndex !== undefined && bIndex !== undefined) return aIndex - bIndex;
@@ -83,7 +83,7 @@ function Home() {
     }
   }, [rentListings, saleListings, offerListings, currentUser]);
 
-  const handleOnGragEnd = async (result) => {
+  const handleOnDragEnd = async (result) => {
     const {source, destination} = result;
     if(!destination) return;
     if(!currentUser) return;
@@ -126,12 +126,11 @@ function Home() {
       } else{
         dispatch(updateUserSuccess(data));
       }
-    }
     }catch(error){
       setter(items);
     }
-  }
-  
+  };
+
   return (
     <div>
       {/* top */}
@@ -160,7 +159,7 @@ function Home() {
       
       {/* listing results */}
 
-      <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
+      {/* <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
         {
           offerListings && offerListings.length > 0 && (
             <div className="">
@@ -179,8 +178,88 @@ function Home() {
               </div>
             </div>
           )
-        }
-        {
+        } */}
+        <DragDropContext onDragEnd = {handleOnDragEnd}>
+          <Droppable className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+            {sortedOffer && sortedOffer. length > 0 && (
+              <div className=''><h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
+              <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>
+                Show more offers
+                </Link>
+              <Droppable droppableId ="offer-list" type="LISTING">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className='flex flex-wrap gap-4 justify-center'>
+                    {sortedOffer.map((listing, index) => (
+                      <Draggable key = {listing._id}
+                      draggableId={listing._id}
+                      index={index}
+                      isDragDisabled ={!currentUser}>
+                        {(provided) => <div ref= {provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                          <ListingItem listing = {listing} />
+                          </div>
+                    )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+              </div>
+            )}
+          {sortedRent && sortedRent.length > 0 && (
+            <div className = "">
+              <div> <h2>Recent placed offer</h2></div>
+            </div>
+            <Droppable droppableId = 'rent-list' type="LISTING">
+              {(provided) => (
+                <div {...provided.droppableProps} ref = {provided.innerRef} >
+                  {sortedRent.map ((listing, index) => (
+                    <Draggable key = {listing._id}
+                    draggableId={listing._id}
+                    index={index}
+                    isDragDisabled ={!currentUser}>
+                      {(provided) => <div ref= {provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        <ListingItem listing = {listing} />
+                        </div>
+                    }
+                    </Draggable>
+                    }
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+              </Droppable>
+                </div>
+              )}
+
+              {sortedSale && sortedSale.length > 0 && (
+            <div className = "">
+              <div> <h2>Recent placed for sale</h2></div>
+            </div>
+            <Droppable droppableId = 'sale-list' type="LISTING">
+              {(provided) => (
+                <div {...provided.droppableProps} ref = {provided.innerRef} >
+                  {sortedRent.map ((listing, index) => (
+                    <Draggable key = {listing._id}
+                    draggableId={listing._id}
+                    index={index}
+                    isDragDisabled ={!currentUser}>
+                      {(provided) => <div ref= {provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        <ListingItem listing = {listing} />
+                        </div>
+                    }
+                    </Draggable>
+                    }
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+              </Droppable>
+                </div>
+              )}
+          
+          </DragDropContext>
+        {/* {/* {
           rentListings && rentListings.length > 0 && (
             <div className="">
               <div className="my-3">
@@ -198,7 +277,37 @@ function Home() {
               </div>
             </div>
           )
-        }
+        } */}
+        
+        <DragDropContext onDragEnd = {handleOnDragEnd}>
+          <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+            {sortedOffer && sortedOffer. length > 0 && (
+              <div className=''>Recent offers
+              <Droppable droppableId ="offer-list" type="LISTING">
+                {(provided) => (
+                  <div {...provided.droppableProps} ref={provided.innerRef} className='flex flex-wrap gap-4 justify-center'>
+                    {sortedOffer.map((listing, index) => (
+                      <Draggable key = {listing._id}
+                      draggableId={listing._id}
+                      index={index}
+                      isDragDisabled ={!currentUser}>
+                        {(provided) => <div ref= {provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                          <ListingItem listing = {listing} />
+                          </div>
+                    )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+              </div>
+            )}
+          </div>
+          </DragDropContext>
+
+
+
         {
           saleListings && saleListings.length > 0 && (
             <div className="">
@@ -219,8 +328,6 @@ function Home() {
           )
         }
       </div>
-    </div>
-  )
-}
+} */}
 
 export default Home
