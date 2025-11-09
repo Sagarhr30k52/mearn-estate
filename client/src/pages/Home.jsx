@@ -159,13 +159,17 @@ function Home() {
       
       
         <DragDropContext onDragEnd = {handleOnDragEnd}>
-          <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'></div>
+          <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+            {/* offer listing */}
             {sortedOffer && sortedOffer. length > 0 && (
-              <div className=''><h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
+              <div className=''>
+                <div className='my-3'>
+                  <h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
               <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>
                 Show more offers
                 </Link>
                 </div>
+  
               <Droppable droppableId ="offer-list" type="LISTING">
                 {(provided) => (
                   <div {...provided.droppableProps} ref={provided.innerRef} className='flex flex-wrap gap-4 justify-center'>
@@ -174,7 +178,9 @@ function Home() {
                       draggableId={listing._id}
                       index={index}
                       isDragDisabled ={!currentUser}>
-                        {(provided) => <div ref= {provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                        {(provided) => <div ref= {provided.innerRef} 
+                        {...provided.draggableProps} 
+                        {...provided.dragHandleProps}>
                           <ListingItem listing = {listing} />
                           </div>
                     )}
@@ -186,6 +192,8 @@ function Home() {
               </Droppable>
               </div>
             )}
+
+            {/* rent section */}
           {sortedRent && sortedRent.length > 0 && (
             <div className = "">
               <div> <h2>Recent placed for rent</h2></div>
@@ -239,10 +247,9 @@ function Home() {
               )}
           
           </DragDropContext>
-          </div>
           );
-        }
-export default Home
+      
+export default Home;
 
 
 
