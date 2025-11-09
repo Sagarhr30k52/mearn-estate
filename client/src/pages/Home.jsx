@@ -157,35 +157,15 @@ function Home() {
       }
       </Swiper>
       
-      {/* listing results */}
-
-      {/* <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
-        {
-          offerListings && offerListings.length > 0 && (
-            <div className="">
-              <div className="my-3">
-                <h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
-                <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>
-                Show more offers
-                </Link>
-              </div>
-              <div className="flex flex-wrap gap-4 justify-center">
-                {
-                  offerListings.map((listing) => (
-                    <ListingItem listing={listing} key={listing._id}></ListingItem>
-                  ))
-                }
-              </div>
-            </div>
-          )
-        } */}
+      
         <DragDropContext onDragEnd = {handleOnDragEnd}>
-          <Droppable className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+          <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'></div>
             {sortedOffer && sortedOffer. length > 0 && (
               <div className=''><h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
               <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>
                 Show more offers
                 </Link>
+                </div>
               <Droppable droppableId ="offer-list" type="LISTING">
                 {(provided) => (
                   <div {...provided.droppableProps} ref={provided.innerRef} className='flex flex-wrap gap-4 justify-center'>
@@ -208,7 +188,7 @@ function Home() {
             )}
           {sortedRent && sortedRent.length > 0 && (
             <div className = "">
-              <div> <h2>Recent placed offer</h2></div>
+              <div> <h2>Recent placed for rent</h2></div>
             </div>
             <Droppable droppableId = 'rent-list' type="LISTING">
               {(provided) => (
@@ -259,6 +239,13 @@ function Home() {
               )}
           
           </DragDropContext>
+          </div>
+          );
+        }
+export default Home
+
+
+
         {/* {/* {
           rentListings && rentListings.length > 0 && (
             <div className="">
@@ -279,55 +266,83 @@ function Home() {
           )
         } */}
         
-        <DragDropContext onDragEnd = {handleOnDragEnd}>
-          <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
-            {sortedOffer && sortedOffer. length > 0 && (
-              <div className=''>Recent offers
-              <Droppable droppableId ="offer-list" type="LISTING">
-                {(provided) => (
-                  <div {...provided.droppableProps} ref={provided.innerRef} className='flex flex-wrap gap-4 justify-center'>
-                    {sortedOffer.map((listing, index) => (
-                      <Draggable key = {listing._id}
-                      draggableId={listing._id}
-                      index={index}
-                      isDragDisabled ={!currentUser}>
-                        {(provided) => <div ref= {provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                          <ListingItem listing = {listing} />
-                          </div>
-                    )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-              </div>
-            )}
-          </div>
-          </DragDropContext>
+//         <DragDropContext onDragEnd = {handleOnDragEnd}>
+//           <div className='max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10'>
+//             {sortedOffer && sortedOffer. length > 0 && (
+//               <div className=''>Recent offers
+//               <Droppable droppableId ="offer-list" type="LISTING">
+//                 {(provided) => (
+//                   <div {...provided.droppableProps} ref={provided.innerRef} className='flex flex-wrap gap-4 justify-center'>
+//                     {sortedOffer.map((listing, index) => (
+//                       <Draggable key = {listing._id}
+//                       draggableId={listing._id}
+//                       index={index}
+//                       isDragDisabled ={!currentUser}>
+//                         {(provided) => <div ref= {provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+//                           <ListingItem listing = {listing} />
+//                           </div>
+//                     )}
+//                       </Draggable>
+//                     ))}
+//                     {provided.placeholder}
+//                   </div>
+//                 )}
+//               </Droppable>
+//               </div>
+//             )}
+//           </div>
+//           </DragDropContext>
 
 
 
+//         {
+//           saleListings && saleListings.length > 0 && (
+//             <div className="">
+//               <div className="my-3">
+//                 <h2 className='text-2xl font-semibold text-slate-600'>Recent places for sale</h2>
+//                 <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=sale'}>
+//                 Show more places for sale
+//                 </Link>
+//               </div>
+//               <div className="flex flex-wrap gap-4 justify-center">
+//                 {
+//                   saleListings.map((listing) => (
+//                     <ListingItem listing={listing} key={listing._id}></ListingItem>
+//                   ))
+//                 }
+//               </div>
+//             </div>
+//           )
+//         }
+//       </div>
+// } */}
+
+
+
+
+
+
+
+
+{/* listing results */}
+
+      {/* <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
         {
-          saleListings && saleListings.length > 0 && (
+          offerListings && offerListings.length > 0 && (
             <div className="">
               <div className="my-3">
-                <h2 className='text-2xl font-semibold text-slate-600'>Recent places for sale</h2>
-                <Link className='text-sm text-blue-800 hover:underline' to={'/search?type=sale'}>
-                Show more places for sale
+                <h2 className='text-2xl font-semibold text-slate-600'>Recent offers</h2>
+                <Link className='text-sm text-blue-800 hover:underline' to={'/search?offer=true'}>
+                Show more offers
                 </Link>
               </div>
               <div className="flex flex-wrap gap-4 justify-center">
                 {
-                  saleListings.map((listing) => (
+                  offerListings.map((listing) => (
                     <ListingItem listing={listing} key={listing._id}></ListingItem>
                   ))
                 }
               </div>
             </div>
           )
-        }
-      </div>
-} */}
-
-export default Home
+        } */}
